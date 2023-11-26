@@ -1,6 +1,33 @@
 #programa contable estandar casaroma
+from tkinter import *
+from tkinter import messagebox
 import sqlite3
-#from productos import producto
+#----------inicio Modulo interfaz grafica----------
+root = Tk()
+root.title("Programa contable") # titulo de la ventana 
+#----- inicio primer frame-----
+miFrame=Frame(root, width=350, height=350)
+miFrame.pack()
+#-----fin primer frame-----
+
+#----- inicio labels-----
+labelConsecutivo = Label(miFrame, text="Consecutivo")
+labelConsecutivo.grid(row=0, column=0, sticky="e")
+
+textoConsecutivo = Entry(miFrame)
+textoConsecutivo.grid(row=0, column=1)
+
+labelFecha = Label(miFrame, text="Fecha")
+labelFecha.grid(row=1, column=0, sticky="e")
+
+textoFecha = Entry(miFrame)
+textoFecha.grid(row=1, column=1)
+#----- fin labels-----
+
+root.mainloop()
+#----------fin Modulo interfaz grafica----------
+
+
 
 #----------INICIO FUNCIONES----------
 #----------Crear bases de datos----------
@@ -9,7 +36,7 @@ def crearTabla ():
     miConexion = sqlite3.connect("productos")   # crear una conexiòn
     miCursor = miConexion.cursor()    # crear puntero
     miCursor.execute("CREATE TABLE PRODUCTOS (NOMBRE_PRODUCTO VARCHAR(50), PRECIO INTEGER, PROVEEDOR VARCHAR(20))")
-#----------Crear listas----------
+#----------Funciones CRUD para listas----------
 
 def crearProducto():
     producto = input('Nombre del producto: ')
@@ -41,7 +68,6 @@ def actualizarProducto():
     miCursor.execute("UPDATE PRODUCTOS SET PRECIO = 10000 WHERE NOMBRE_ARTICULO = 'oregano'")
 
     miConexion.close()  # cerrar conexiòn
-
 
 def borrarProducto():
     #idNombre =

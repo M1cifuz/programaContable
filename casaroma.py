@@ -10,11 +10,11 @@ import sqlite3
 #----------Crear tabla----------
 
 def conexionBBDDproductos ():
-    miConexion = sqlite3.connect("productos")   # crear una conexiòn
+    miConexion = sqlite3.connect("tabla_productos")   # crear una conexiòn
     miCursor = miConexion.cursor()    # crear puntero
     try:
         miCursor.execute("""
-                        CREATE TABLE PRODUCTOS (
+                        CREATE TABLE TABLA_PRODUCTOS (
                         ID_PRODUCTO INTEGER PRIMARY KEY AUTOINCREMENT,
                         NOMBRE_PRODUCTO VARCHAR(40), 
                         MARCA_PRODUCTO VARCHAR(40), 
@@ -32,46 +32,42 @@ def salirAplicacion():
     
 #----------Funciones CRUD para listas----------
 
-def crearProducto():
-    producto = input('Nombre del producto: ')
-    precio = int(input('Precio del producto: '))
-    proveedor = input('Proveedor del producto: ')
-    
-    miConexion = sqlite3.connect("productos")   # crear una conexiòn
+def crearProducto():    
+    miConexion = sqlite3.connect("tabla_productos")   # crear una conexiòn
     miCursor = miConexion.cursor()    # crear puntero
-    miCursor.execute("INSERT INTO PRODUCTOS (NOMBRE_PRODUCTO, PRECIO, PROVEEDOR) VALUES (?,?,?)", (producto, precio, proveedor))                  
+    miCursor.execute("INSERT INTO TABLA_PRODUCTOS VALUES(NULL,'"+ elProducto.get() +"','"+ laMarca.get() +"','"+ laPresentacion.get() +"' ,'"+ elPrecio.get() +"')")
     miConexion.commit() # confirmar cambios
-    miConexion.close()  # cerrar conexiòn
-
-def leerLista():
-    miConexion = sqlite3.connect("productos")   # crear una conexiòn
-    miCursor = miConexion.cursor()    # crear puntero
-
-    miCursor.execute("SELECT * FROM PRODUCTOS")
-    todosLosProductos = miCursor.fetchall()
     
-    for producto in todosLosProductos:
-        print(producto)
+    messagebox.showinfo("BBDD","Registro insertado con éxito")
 
-    miConexion.close()  # cerrar conexiòn
+def leerProducto():
+    miConexion = sqlite3.connect("tabla_productos")   # crear una conexiòn
+    miCursor = miConexion.cursor()    # crear puntero
+    miCursor.execute("SELECT * FROM TABLA_PRODUCTOS WHERE ID_PRODUCTO = " + elId.get())
+    usuario = miCursor.fetchall() # fetchall debuelve un array con todos los registros que cumplan la consulta sql
+    for i in usuario:
+        elId.set(i[0])
+        elProducto.set(i[1])
+        laMarca.set(i[2])
+        laPresentacion.set(i[3])
+        elPrecio.set(i[4])
+    miConexion.commit()
 
 def actualizarProducto():
-    miConexion = sqlite3.connect("productos")   # crear una conexiòn
+    miConexion = sqlite3.connect("tabla_productos")   # crear una conexiòn
     miCursor = miConexion.cursor()    # crear puntero
+    miCursor.execute("UPDATE TABLA_PRODUCTOS SET NOMBRE_PRODUCTO='"+ elProducto.get() +"',MARCA_PRODUCTO='"+ laMarca.get() +"',PRESENTACION='"+ laPresentacion.get() +"',PRECIO='"+ elPrecio.get() +"'WHERE ID_PRODUCTO="+ elId.get())
+    miConexion.commit()
 
-    miCursor.execute("UPDATE PRODUCTOS SET PRECIO = 10000 WHERE NOMBRE_ARTICULO = 'oregano'")
+    messagebox.showinfo("BBDD","Registro actualizado con éxito")
 
-    miConexion.close()  # cerrar conexiòn
+def borrarCampos():
+    elId.set("")
+    elProducto.set("")
+    laMarca.set("")
+    laPresentacion.set("")
+    elPrecio.set("")
 
-def borrarProducto():
-    #idNombre =
-
-    miConexion = sqlite3.connect("productos")   # crear una conexiòn
-    miCursor = miConexion.cursor()    # crear puntero
-
-    miCursor.execute("DELETE FROM PRODUCTOS WHERE NOMBRE_PRODUCTO = 'oregano'")
-
-    miConexion.close()  # cerrar conexiòn
 #----------FIN FUNCIONES----------
 
 
@@ -87,18 +83,24 @@ root.config(bg="#E48F45")
 barraMenu=Menu(root)
 root.config(menu=barraMenu)
 
+elId = StringVar()
+elProducto = StringVar()
+laMarca = StringVar()
+laPresentacion = StringVar()
+elPrecio = StringVar()
+
 bbddMenu=Menu(barraMenu, tearoff=0)
 bbddMenu.add_command(label="Conectar", command=conexionBBDDproductos)
 bbddMenu.add_command(label="Salir", command=salirAplicacion)
 
 borrarMenu=Menu(barraMenu, tearoff=0)
-borrarMenu.add_command(label="Borrar campos")
+borrarMenu.add_command(label="Borrar campos", command=borrarCampos)
 
 crudMenu=Menu(barraMenu, tearoff=0)
-crudMenu.add_command(label="Crear")
-crudMenu.add_command(label="Leer")
-crudMenu.add_command(label="Actualizar")
-crudMenu.add_command(label="Borrar")
+crudMenu.add_command(label="Crear", command=crearProducto)
+crudMenu.add_command(label="Leer", command=leerProducto)
+crudMenu.add_command(label="Actualizar", command=actualizarProducto)
+crudMenu.add_command(label="Borrar", command=borrarCampos)
 
 ayudaMenu=Menu(barraMenu, tearoff=0)
 ayudaMenu.add_command(label="Licencia")
@@ -130,7 +132,7 @@ labelIDProducto = Label(miFrame, text="ID producto:", font=(12))
 labelIDProducto.grid(row=0, column=0, sticky="e", pady=5, padx=3)
 labelIDProducto.config(bg="#E48F45")
 
-textoIDProducto = Entry(miFrame)
+textoIDProducto = Entry(miFrame, textvariable=elId)
 textoIDProducto.config(justify="center", font=12)
 textoIDProducto.grid(row=0, column=1)
 
@@ -138,47 +140,47 @@ labelProducto = Label(miFrame, text="Producto:", font=(12))
 labelProducto.grid(row=1, column=0, sticky="e", pady=5, padx=3)
 labelProducto.config(bg="#E48F45")
 
-textoProducto = Entry(miFrame)
+textoProducto = Entry(miFrame, textvariable=elProducto)
 textoProducto.grid(row=1, column=1)
 
 labelMarca = Label(miFrame, text="Marca:", font=(12))
 labelMarca.grid(row=1, column=2, sticky="e", pady=5, padx=3)
 labelMarca.config(bg="#E48F45")
 
-textoMarca = Entry(miFrame)
+textoMarca = Entry(miFrame, textvariable=laMarca)
 textoMarca.grid(row=1, column=3)
 
 labelPresentacion = Label(miFrame, text="Presentaciòn:", font=(12))
 labelPresentacion.grid(row=2, column=0, sticky="e", pady=5, padx=3)
 labelPresentacion.config(bg="#E48F45")
 
-textoPresentacion = Entry(miFrame)
+textoPresentacion = Entry(miFrame, textvariable=laPresentacion)
 textoPresentacion.grid(row=2, column=1)
 
 labelPrecio = Label(miFrame, text="Precio:", font=(12))
 labelPrecio.grid(row=2, column=2, sticky="e", pady=5, padx=3)
 labelPrecio.config(bg="#E48F45")
 
-textoPrecio = Entry(miFrame)
+textoPrecio = Entry(miFrame, textvariable=elPrecio)
 textoPrecio.grid(row=2, column=3)
 
 #-----Botones-----
 
 botonCrear = Button(miFrameBotones, text="Crear", font=10)
 botonCrear.grid(row=0, column=0, sticky="w", pady=5, padx=3)
-botonCrear.config(bg="#994D1C")
+botonCrear.config(bg="#994D1C", command=crearProducto)
 
 botonLeer = Button(miFrameBotones, text="Leer", font=10)
 botonLeer.grid(row=0, column=1, sticky="w", pady=5, padx=3)
-botonLeer.config(bg="#994D1C")
+botonLeer.config(bg="#994D1C", command=leerProducto)
 
 botonActualizar = Button(miFrameBotones, text="Actualizar", font=10)
 botonActualizar.grid(row=0, column=2, sticky="w", pady=5, padx=3)
-botonActualizar.config(bg="#994D1C")
+botonActualizar.config(bg="#994D1C", command=actualizarProducto)
 
 botonBorrar = Button(miFrameBotones, text="Borrar", font=10)
 botonBorrar.grid(row=0, column=3, sticky="w", pady=5, padx=3)
-botonBorrar.config(bg="#994D1C")
+botonBorrar.config(bg="#994D1C", command=borrarCampos)
 #----- fin labels-----
 
 root.mainloop()

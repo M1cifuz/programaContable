@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import messagebox
 import sqlite3
+from modulo_crud import *
 
 #----------INICIO FUNCIONES----------
 
@@ -37,7 +38,6 @@ def crearProducto():
     miCursor = miConexion.cursor()    # crear puntero
     miCursor.execute("INSERT INTO TABLA_PRODUCTOS VALUES(NULL,'"+ elProducto.get() +"','"+ laMarca.get() +"','"+ laPresentacion.get() +"' ,'"+ elPrecio.get() +"')")
     miConexion.commit() # confirmar cambios
-    
     messagebox.showinfo("BBDD","Registro insertado con éxito")
 
 def leerProducto():
@@ -58,7 +58,6 @@ def actualizarProducto():
     miCursor = miConexion.cursor()    # crear puntero
     miCursor.execute("UPDATE TABLA_PRODUCTOS SET NOMBRE_PRODUCTO='"+ elProducto.get() +"',MARCA_PRODUCTO='"+ laMarca.get() +"',PRESENTACION='"+ laPresentacion.get() +"',PRECIO='"+ elPrecio.get() +"'WHERE ID_PRODUCTO="+ elId.get())
     miConexion.commit()
-
     messagebox.showinfo("BBDD","Registro actualizado con éxito")
 
 def borrarProducto():

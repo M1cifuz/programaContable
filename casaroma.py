@@ -61,6 +61,13 @@ def actualizarProducto():
 
     messagebox.showinfo("BBDD","Registro actualizado con éxito")
 
+def borrarProducto():
+    miConexion = sqlite3.connect("tabla_productos")   # crear una conexiòn
+    miCursor = miConexion.cursor()    # crear puntero
+    miCursor.execute("DELETE FROM TABLA_PRODUCTOS WHERE ID_PRODUCTO=" + elId.get())
+    miConexion.commit()
+    messagebox.showinfo("BBDD","Registro borrado con éxito")
+
 def borrarCampos():
     elId.set("")
     elProducto.set("")
@@ -100,7 +107,7 @@ crudMenu=Menu(barraMenu, tearoff=0)
 crudMenu.add_command(label="Crear", command=crearProducto)
 crudMenu.add_command(label="Leer", command=leerProducto)
 crudMenu.add_command(label="Actualizar", command=actualizarProducto)
-crudMenu.add_command(label="Borrar", command=borrarCampos)
+crudMenu.add_command(label="Borrar", command=borrarProducto)
 
 ayudaMenu=Menu(barraMenu, tearoff=0)
 ayudaMenu.add_command(label="Licencia")
@@ -180,7 +187,7 @@ botonActualizar.config(bg="#994D1C", command=actualizarProducto)
 
 botonBorrar = Button(miFrameBotones, text="Borrar", font=10)
 botonBorrar.grid(row=0, column=3, sticky="w", pady=5, padx=3)
-botonBorrar.config(bg="#994D1C", command=borrarCampos)
+botonBorrar.config(bg="#994D1C", command=borrarProducto)
 #----- fin labels-----
 
 root.mainloop()
